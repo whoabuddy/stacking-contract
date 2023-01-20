@@ -47,17 +47,30 @@
   )
 )
 
+(define-public (deposit-stx (sender principal) (amount uint))
+  (begin
+    (asserts! (and (> amount u0) (>= (stx-get-balance sender) amount)) ERR_INVALID_PARAMS)
+    (print {
+      event: "deposit-stx",
+      amount: amount,
+      caller: contract-caller,
+      sender: tx-sender
+    })
+    (stx-transfer? amount sender SELF)
+  )
+)
+
 (define-public (withdraw-stx (to principal) (amount uint))
   (begin
     (try! (is-authorized))
-    (asserts! (and (> u0 amount) (>= (get-balance) amount)) ERR_INVALID_PARAMS)
+    (asserts! (and (> amount u0) (>= (get-balance) amount)) ERR_INVALID_PARAMS)
     (print {
       event: "withdraw-stx",
       amount: amount,
       caller: contract-caller,
       sender: tx-sender
     })
-    (as-contract (stx-transfer? amount tx-sender to))
+    (as-contract (stx-transfer? amount SELF to))
   )
 )
 
